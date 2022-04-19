@@ -1,0 +1,1031 @@
+Script para a reportagem 
+
+Link da reportagem: https://www.generonumero.media/saude-mental_lgbt/ 
+
+
+
+##=====================================
+## Atualização SINAN - Lesões autoprovocadas
+##=====================================
+
+rm(list = ls())
+gc()
+
+#*exclui os 12 anos
+
+library(read.dbc)
+library(lubridate)
+library(stringr)
+library(haven) # pacote para importar dados
+library(tidyverse) # pacote para mexer nos dados
+library(janitor) # pacote para sumarizar dados
+library(formattable) # mudar valores para porcentagens
+library(nycflights13)
+library(reshape2)
+library(readr)
+library(dplyr)
+
+# Definindo opcao de codificacao dos caracteres e linguagem
+aviso <- getOption("warn")
+options(warn=-1)
+options(encoding="latin1")
+options(warn=aviso)
+rm(aviso)
+
+# Definindo opcao de exibicao de numeros sem exponencial
+aviso <- getOption("warn")
+options(warn=-1)
+options(scipen=999)
+options(warn=aviso)
+rm(aviso)
+
+SINAN2019_selec_AM <- read_csv("SINAN2019_selec_AM.csv")
+SINAN2019_selec_AC <- read_csv("SINAN2019_selec_AC.csv")
+SINAN2019_selec_BA <- read_csv("SINAN2019_selec_BA.csv")
+SINAN2019_selec_CE <- read_csv("SINAN2019_selec_CE.csv")
+SINAN2019_selec_AL <- read_csv("SINAN2019_selec_AL.csv")
+SINAN2019_selec_RN <- read_csv("SINAN2019_selec_RN.csv")
+SINAN2019_selec_RS <- read_csv("SINAN2019_selec_RS.csv")
+SINAN2019_selec_RJ <- read_csv("SINAN2019_selec_RJ.csv")
+SINAN2019_selec_SP <- read_csv("SINAN2019_selec_SP.csv")
+SINAN2019_selec_MG <- read_csv("SINAN2019_selec_MG.csv")
+SINAN2019_selec_ES <- read_csv("SINAN2019_selec_ES.csv")
+SINAN2019_selec_MT <- read_csv("SINAN2019_selec_MT.csv")
+SINAN2019_selec_MS <- read_csv("SINAN2019_selec_MS.csv")
+SINAN2019_selec_RS <- read_csv("SINAN2019_selec_RS.csv")
+SINAN2019_selec_SC <- read_csv("SINAN2019_selec_SC.csv")
+SINAN2019_selec_PR <- read_csv("SINAN2019_selec_PR.csv")
+SINAN2019_selec_PI <- read_csv("SINAN2019_selec_PI.csv")
+SINAN2019_selec_PB <- read_csv("SINAN2019_selec_PB.csv")
+SINAN2019_selec_MA <- read_csv("SINAN2019_selec_MA.csv")
+SINAN2019_selec_AP <- read_csv("SINAN2019_selec_AP.csv")
+SINAN2019_selec_DF <- read_csv("SINAN2019_selec_DF.csv")
+SINAN2019_selec_GO <- read_csv("SINAN2019_selec_GO.csv")
+SINAN2019_selec_SE <- read_csv("SINAN2019_selec_SE.csv")
+SINAN2019_selec_RR <- read_csv("SINAN2019_selec_RR.csv")
+SINAN2019_selec_RO <- read_csv("SINAN2019_selec_RO.csv")
+SINAN2019_selec_ES <- read_csv("SINAN2019_selec_ES.csv")
+SINAN2019_selec_PA <- read_csv("SINAN2019_selec_PA.csv")
+SINAN2019_selec_PE <- read_csv("SINAN2019_selec_PE.csv")
+SINAN2019_selec_TO <- read_csv("SINAN2019_selec_TO.csv")
+
+
+
+#Sudeste
+#SP 
+
+SINAN2019_adolescentes <- SINAN2019_selec_SP %>%
+  filter(SINAN2019_selec_SP$LES_AUTOP == "Sim")
+
+
+
+#selecionando o que imṕorta 
+
+# selecionando apenas casos de são paulo 
+
+SINAN2019_adolescentes_SP <- SINAN2019_adolescentes %>% 
+  select(anosid, raca, id_gen, sexo, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+SINAN2019_adolescentes_SP_1 <- SINAN2019_adolescentes_SP %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, raca, sexo, id_gen, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+
+write_csv(SINAN2019_adolescentes_SP, "SINAN2019_adolescentes_SP.csv")
+write_csv(SINAN2019_adolescentes_SP_1 , "SINAN2019_adolescentes_SP_motivacao.csv")
+
+#-------------------------------------------------------------------------------------------
+
+# RJ
+
+
+SINAN2019_adolescentes <- SINAN2019_selec_RJ %>%
+  filter(SINAN2019_selec_RJ$LES_AUTOP == "Sim")
+
+#selecionando o que imṕorta 
+
+SINAN2019_adolescentes_RJ <- SINAN2019_adolescentes%>% 
+  select(anosid, raca, id_gen, sexo, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+SINAN2019_adolescentes_RJ_1 <- SINAN2019_adolescentes_RJ %>%
+ count(idcat, raca, id_gen, sexo, VIOL_MOTIV) %>% 
+ filter(idcat == "12 a 17 anos") %>% 
+ group_by(raca)
+
+
+write_csv(SINAN2019_adolescentes_RJ, "SINAN2019_adolescentes_RJ.csv")
+write_csv(SINAN2019_adolescentes_RJ_1 , "SINAN2019_adolescentes_RJ_motivacao.csv")
+
+-------------------------------------------------------------------------------------------------
+  
+  #MG
+  
+  SINAN2019_adolescentes <- SINAN2019_selec_MG %>%
+  filter(SINAN2019_selec_MG$LES_AUTOP == "Sim")
+
+
+
+#selecionando o que imṕorta 
+
+SINAN2019_adolescentes_MG <- SINAN2019_adolescentes %>% 
+  select(anosid, raca, id_gen, sexo, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+SINAN2019_adolescentes_MG_1 <- SINAN2019_adolescentes_MG %>%
+  count(idcat, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  filter(idcat == "12 a 17 anos") %>% 
+  group_by(raca)
+
+
+write_csv(SINAN2019_adolescentes_MG, "SINAN2019_adolescentes_MG.csv")
+write_csv(SINAN2019_adolescentes_MG_1 , "SINAN2019_adolescentes_MG_motivacao.csv")
+
+#-------------------------------------------------------------------------------------------------
+#ES
+
+SINAN2019_adolescentes <- SINAN2019_selec_ES %>%
+  filter(SINAN2019_selec_ES$LES_AUTOP == "Sim")
+
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_ES_19 <- SINAN2019_adolescentes_base %>%
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  filter(idcat == "12 a 17 anos") %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_ES.csv")
+write_csv(adolescentes_ES_19, "SINAN2019_adolescentes_ES_motivacao.csv")
+
+adolescentes_1 <- full_join(adolescentes_ES_19, SINAN2019_adolescentes_RJ_1)
+adolescentes_2 <- full_join(adolescentes_1, SINAN2019_adolescentes_MG_1)
+adolescentes_sudeste_3 <- full_join(adolescentes_2, SINAN2019_adolescentes_SP_1)
+
+---------------------------------------------------------------------------------------------------
+  #SUL 
+  
+  #PR 
+  
+  SINAN2019_adolescentes <- SINAN2019_selec_PR %>%
+  filter(SINAN2019_selec_PR$LES_AUTOP == "Sim")
+
+
+SINAN2019__adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_PR_19 <- SINAN2019_adolescentes_base %>%
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  filter(idcat == "12 a 17 anos") %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_PR.csv")
+write_csv(adolescentes_PR_19, "SINAN2019_adolescentes_PR_motivacao.csv")
+
+
+
+#SC 
+
+SINAN2019_adolescentes <- SINAN2019_selec_SC %>%
+  filter(SINAN2019_selec_SC$LES_AUTOP == "Sim")
+
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_SC_19 <- SINAN2019_adolescentes_base %>%
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_SC.csv")
+write_csv(adolescentes_SC_19, "SINAN2019_adolescentes_SC_motivacao.csv")
+
+
+#RS
+
+SINAN2019_adolescentes <- SINAN2019_selec_RS %>%
+  filter(SINAN2019_selec_RS$LES_AUTOP == "Sim")
+
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  filter(idcat == "12 a 17 anos") %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_RS_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_RS.csv")
+write_csv(adolescentes_RS_19, "SINAN2019_adolescentes_RS_motivacao.csv")
+
+adolescentes_sul <- full_join(adolescentes_PR_19, adolescentes_SC_19)
+adolescentes_sul_1 <- full_join(adolescentes_sul, adolescentes_RS_19)
+
+
+
+#-----------------------------------------------------------------------------------------
+
+#NORTE - TO
+
+SINAN2019_adolescentes <- SINAN2019_selec_TO %>%
+  filter(SINAN2019_selec_TO$LES_AUTOP == "Sim")
+
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_TO_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_TO.csv")
+write_csv(adolescentes_TO_19, "SINAN2019_adolescentes_TO_motivacao.csv")
+
+#--------------------------------------------------------------------------------------
+#PA 
+
+
+SINAN2019_adolescentes <- SINAN2019_selec_PA %>%
+  filter(SINAN2019_selec_PA$LES_AUTOP == "Sim")
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_PA_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_PA.csv")
+write_csv(adolescentes_PA_19, "SINAN2019_adolescentes_PA_motivacao.csv")
+
+#----------------------------------------------------------------------------------------------------
+#AP 
+
+SINAN2019_adolescentes <- SINAN2019_selec_AP %>%
+  filter(SINAN2019_selec_AP$LES_AUTOP == "Sim")
+
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_AP_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_AP.csv")
+write_csv(adolescentes_AP_19, "SINAN2019_adolescentes_AP_motivacao.csv")
+
+-------------------------------------------------------------------------------------
+  
+  #RR
+ 
+   SINAN2019_adolescentes <- SINAN2019_selec_RR %>%
+  filter(SINAN2019_selec_RR$LES_AUTOP == "Sim")
+
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_RR_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_RR.csv")
+write_csv(adolescentes_RR_19, "SINAN2019_adolescentes_RR_motivacao.csv")
+
+---------------------------------------------------------------------------------------
+  
+  #RO
+  
+  SINAN2019_adolescentes <- SINAN2019_selec_RO %>%
+  filter(SINAN2019_selec_RO$LES_AUTOP == "Sim")
+
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_RO_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_RO.csv")
+write_csv(adolescentes_RO_19, "SINAN2019_adolescentes_RO_motivacao.csv")
+
+
+-------------------------------------------------------------------------------------
+  
+  #AM
+  
+  SINAN2019_adolescentes <- SINAN2019_selec_AM %>%
+  filter(SINAN2019_selec_AM$LES_AUTOP == "Sim")
+
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_AM_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_AM.csv")
+write_csv(adolescentes_AM_19, "SINAN2019_adolescentes_AM_motivacao.csv")
+
+
+
+------------------------------------------------------------------------------------
+  
+  #AC
+  
+  SINAN2019_adolescentes <- SINAN2019_selec_AC %>%
+  filter(SINAN2019_selec_AC$LES_AUTOP == "Sim")
+
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_AC_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_AC.csv")
+write_csv(adolescentes_AC_19 , "SINAN2019_adolescentes_AC_motivacao.csv")
+
+
+adolescentes__norte_1 <- full_join(adolescentes_AC_19, adolescentes_AM_19)
+adolescentes__norte_2 <- full_join(adolescentes__norte_1, adolescentes_AP_19)
+adolescentes__norte_3 <- full_join(adolescentes__norte_2 , adolescentes_PA_19)
+adolescentes__norte_4 <- full_join(adolescentes__norte_3, adolescentes_RO_19)
+adolescentes__norte_5 <- full_join(adolescentes__norte_4, adolescentes_RR_19)
+adolescentes__norte_6 <- full_join(adolescentes__norte_5 , adolescentes_TO_19)
+
+# Nordeste
+
+#BA
+
+
+SINAN2019_adolescentes <- SINAN2019_selec_BA %>%
+  filter(SINAN2019_selec_BA$LES_AUTOP == "Sim")
+
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_BA_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_BA.csv")
+write_csv(adolescentes_BA_19, "SINAN2019_adolescentes_BA_motivacao.csv")
+
+
+
+#SE
+
+
+SINAN2019_adolescentes <- SINAN2019_selec_SE %>%
+  filter(SINAN2019_selec_SE$LES_AUTOP == "Sim")
+
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_SE_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_SE.csv")
+write_csv(adolescentes_SE_19, "SINAN2019_adolescentes_SE_motivacao.csv")
+
+
+
+#MA
+
+
+SINAN2019_adolescentes <- SINAN2019_selec_MA %>%
+  filter(SINAN2019_selec_MA$LES_AUTOP == "Sim")
+
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_MA_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_MA.csv")
+write_csv(adolescentes_MA_19, "SINAN2019_adolescentes_MA_motivacao.csv")
+
+
+#AL
+
+
+SINAN2019_adolescentes <- SINAN2019_selec_AL %>%
+  filter(SINAN2019_selec_AL$LES_AUTOP == "Sim")
+
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "13 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_AL_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "13 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_AL.csv")
+write_csv(adolescentes_AL_19, "SINAN2019_adolescentes_AL_motivacao.csv")
+
+#CE
+
+
+SINAN2019_adolescentes <- SINAN2019_selec_CE %>%
+  filter(SINAN2019_selec_CE$LES_AUTOP == "Sim")
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_CE_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_CE.csv")
+write_csv(adolescentes_CE_19, "SINAN2019_adolescentes_CE_motivacao.csv")
+
+
+
+
+-------------------------------------------------------------------------------------------------
+  
+  #PE
+  
+  
+  SINAN2019_adolescentes <- SINAN2019_selec_PE %>%
+  filter(SINAN2019_selec_PE$LES_AUTOP == "Sim")
+
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_PE_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_PE.csv")
+write_csv(adolescentes_PE_19, "SINAN2019_adolescentes_PE_motivacao.csv")
+
+
+#PI
+
+
+SINAN2019_adolescentes <- SINAN2019_selec_PI %>%
+  filter(SINAN2019_selec_PI$LES_AUTOP == "Sim")
+
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_PI_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_PI.csv")
+write_csv(adolescentes_PI_19, "SINAN2019_adolescentes_PI_motivacao.csv")
+
+
+#PB
+
+
+SINAN2019_adolescentes <- SINAN2019_selec_PB %>%
+  filter(SINAN2019_selec_PB$LES_AUTOP == "Sim")
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_PB_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_PB.csv")
+write_csv(adolescentes_PB_19, "SINAN2019_adolescentes_PB_motivacao.csv")
+
+
+#RN 
+
+
+SINAN2019_adolescentes <- SINAN2019_selec_RN %>%
+  filter(SINAN2019_selec_RN$LES_AUTOP == "Sim")
+
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_RN_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescenes_RN.csv")
+write_csv(adolescentes_RN_19, "SINAN2019_adolescentes_RN_motivacao.csv")
+
+
+
+
+adolescentes_nordeste_1 <- full_join(adolescentes_RN_19, adolescentes_BA_19)
+adolescentes_nordeste_2 <- full_join(adolescentes_nordeste_1, adolescentes_CE_19)
+adolescentes_nordeste_3 <- full_join(adolescentes_nordeste_2, adolescentes_AL_19)
+adolescentes_nordeste_4 <- full_join(adolescentes_nordeste_3, adolescentes_MA_19)
+adolescentes_nordeste_5 <- full_join(adolescentes_nordeste_4, adolescentes_PB_19)
+adolescentes_nordeste_6 <- full_join(adolescentes_nordeste_5, adolescentes_RN_19)
+adolescentes_nordeste_7 <- full_join(adolescentes_nordeste_6, adolescentes_PI_19)
+adolescentes_nordeste_8 <- full_join(adolescentes_nordeste_7, adolescentes_PE_19)
+
+
+# Centro-Oeste 
+
+#DF 
+
+SINAN2019_adolescentes_<- SINAN2019_selec_DF %>%
+  filter(SINAN2019_selec_DF$LES_AUTOP == "Sim")
+
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_DF_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019__adolescentes_DF.csv")
+write_csv(adolescentes_DF_19, "SINAN2019__adolescentes_DF_motivacao.csv")
+
+#MS
+
+SINAN2019_adolescentes <- SINAN2019_selec_MS %>%
+  filter(SINAN2019_selec_MS$LES_AUTOP == "Sim")
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_MS_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_MS.csv")
+write_csv(adolescentes_MS_19, "SINAN2019_adolescentes_MS_motivacao.csv")
+
+
+#MT 
+
+SINAN2019_adolescentes <- SINAN2019_selec_MT %>%
+  filter(SINAN2019_selec_MT$LES_AUTOP == "Sim")
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_MT_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_MT.csv")
+write_csv(adolescentes_MT_19, "SINAN2019_adolescentes_MT_motivacao.csv")
+
+#GO
+
+SINAN2019_adolescentes <- SINAN2019_selec_GO %>%
+  filter(SINAN2019_selec_GO$LES_AUTOP == "Sim")
+
+SINAN2019_adolescentes_base <- SINAN2019_adolescentes %>% 
+  select(anosid, sexo, raca, id_gen, VIOL_MOTIV) %>% 
+  mutate(idcat = case_when(anosid %in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                           anosid %in% c(13,14,15,16,17) ~ "12 a 17 anos",
+                           anosid %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                           anosid %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))  
+
+adolescentes_GO_19 <- SINAN2019_adolescentes_base %>%
+  filter(idcat == "12 a 17 anos") %>% 
+  count(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(raca)
+
+write_csv(SINAN2019_adolescentes_base, "SINAN2019_adolescentes_GO.csv")
+write_csv(adolescentes_GO_19, "SINAN2019_adolescentes_GO_motivacao.csv")
+
+adolescentes_centro <- full_join(adolescentes_GO_19, adolescentes_MS_19)
+adolescentes_centro_1 <- full_join(adolescentes_centro, adolescentes_MT_19)
+adolescentes_centro_2 <- full_join(adolescentes_centro_1, adolescentes_DF_19)
+
+
+adolescentes_lesoes_1 <- full_join(adolescentes_nordeste_8, adolescentes_centro_2)
+adolescentes_lesoes_2 <- full_join(adolescentes_lesoes_1, adolescentes_sul_1)
+adolescentes_completo <- full_join(adolescentes_lesoes_2, sudeste_3)
+
+
+adolescentes_lesoes_raça <- adolescentes_lesoes_completo %>% 
+  select(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIVV) %>% 
+  group_by(raca) %>% 
+  count(raca, VIOL_MOTIV)
+
+adolescentes_lesoes_raça <- adolescentes_lesoes_completo %>% 
+  select(idcat, sexo, raca, id_gen, idcat, VIOL_MOTIV) %>% 
+  group_by(sexo) %>% 
+  count(raca, sexo, VIOL_MOTIV)
+
+
+write_csv(adolescentes_completo, "adolescentes_completo.csv")
+write_csv(adolescentes_lesoes_raça, "adolescentes_lesoes_raca.csv")
+
+
+
+sum(adolescentes_lesoes_raça$n)
+
+
