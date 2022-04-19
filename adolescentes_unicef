@@ -1,0 +1,218 @@
+Este código foi utilizado para a reportagem "Pesquisa revela jovens pessimistas e desconfiados da polícia no Brasil", publicada no site Gênero e Número
+Consultamos a base de dados disponível no seguinte link: https://changingchildhood.unicef.org/about (CSV data). 
+
+library(readr)
+library(dplyr)
+library(tidyverse)
+library(janitor)
+library(pryr)
+
+mem_used()
+# 27.9 MB
+
+x <- mem_used()
+x
+# 27.9 MB
+class(x)
+# [1] "bytes"
+
+library(unix)
+rlimit_as(1e12)
+
+# Limpando arquivos armazenados na memoria
+rm(list=ls(all=TRUE))
+
+# Definindo opcao de codificacao dos caracteres e linguagem
+aviso <- getOption("warn")
+options(warn=-1)
+options(encoding="latin1")
+options(warn=aviso)
+rm(aviso)
+
+# Definindo opcao de exibicao de numeros sem exponencial
+aviso <- getOption("warn")
+options(warn=-1)
+options(scipen=999)
+options(warn=aviso)
+rm(aviso)
+
+# Definindo opcao de repositorio para instalacao dos pacotes necessarios
+aviso <- getOption("warn")
+options(warn=-1)
+options(repos=structure(c(CRAN="https://cran.r-project.org/")))
+options(warn=aviso)
+rm(aviso)
+
+adolescentes <- read_csv("unicef-changing-childhood-data.csv")
+names(adolescentes)
+
+  
+#Questões que queremos: 
+
+#9. Do you think with each new generation, the world is becoming a better place or a worse place?
+#12. How much do you trust the police in to protect you? A lot, a little, not at all?
+# 16. How important do you think it is for political leaders to listen to children’s voices when making
+#decisions in ? Very important, somewhat important, or not important at all?
+# 20. In your opinion, what is the minimum acceptable age for a FEMALE to get married? (Open
+#                                                                                        ended and code actual age)
+#21. In your opinion, what is the minimum acceptable age for a MALE to get married? (Open ended
+#                                                                                    and code actual age)
+#25. How important is it to you that the following groups are treated? Very important,
+#somewhat important, not important at all? (Read Items)
+ 
+
+adolescentes <- adolescentes %>% 
+  select(WP5,WP1219,AGE,WP22140,WP22092,WP22096,WP22105,WP22109,WP22110,WP22121,WP22122,WP22123, WP22124) %>% 
+  filter(WP5 == 33) %>% 
+  filter(WP22140 == 1) 
+
+adolescentes <- adolescentes %>% 
+  mutate(WP1219 = ifelse(WP1219 == 1, "Homem", "Mulher")) 
+  
+adolescentes <- adolescentes %>% 
+  mutate(WP22092 = case_when(WP22092 == 1 ~ "Better place",
+                             WP22092 == 2 ~ "Worse place",
+                             WP22092 == 3 ~ "(The same)",
+                             WP22092 == 8 ~ "(DK)",
+                             WP22092 == 9 ~ "(Refused)"))
+
+adolescentes <- adolescentes %>% 
+  mutate(AGE = case_when(AGE == 1 ~ "15 - 19",
+                             AGE == 2 ~ "20 - 24"))
+
+                       
+adolescentes <- adolescentes %>% 
+  mutate(WP22096 = case_when(WP22096 == 1 ~ "A lot",
+                             WP22096 == 2 ~ "A little",
+                             WP22096 == 3 ~ "Not at all",
+                             WP22096 == 8 ~ "(DK)",
+                             WP22096 == 9 ~ "(Refused)"))
+
+
+
+adolescentes <- adolescentes %>% 
+  mutate(WP22105 = case_when(WP22105 == 1 ~ "Very important",
+                             WP22105 == 2 ~ "Somewhat important",
+                             WP22105 == 3 ~ "Not important at all",
+                             WP22105 == 8 ~ "(DK)",
+                             WP22105 == 9 ~ "(Refused)"))
+
+adolescentes <- adolescentes %>% 
+  mutate(WP22109 = case_when(WP22109 == 97 ~ 97+ ,
+                             WP22109 == 98 ~ '(DK)',
+                             WP22109 == 99 ~ '(Refused)'))
+
+adolescentes <- adolescentes %>% 
+  mutate(WP22110 = case_when(WP22110 == 97 ~ 97+,
+                             WP22110 == 98 ~ "(DK)",
+                             WP22110 == 99 ~ "(Refused)"))
+
+adolescentes <- adolescentes %>% 
+  mutate(WP22121 = case_when(WP22121 == 1 ~ "Very important",
+                             WP22121 == 2 ~ "Somewhat important",
+                             WP22121 == 3 ~ "Not important at all",
+                             WP22121 == 8 ~ "(DK)",
+                             WP22121 == 9 ~ "(Refused)"))
+
+adolescentes <- adolescentes %>% 
+  mutate(WP22122 = case_when(WP22122 == 1 ~ "Very important",
+                             WP22122 == 2 ~ "Somewhat important",
+                             WP22122 == 3 ~ "Not important at all",
+                             WP22122 == 8 ~ "(DK)",
+                             WP22122 == 9 ~ "(Refused)"))
+
+adolescentes <- adolescentes %>% 
+  mutate(WP22123 = case_when(WP22123 == 1 ~ "Very important",
+                             WP22123 == 2 ~ "Somewhat important",
+                             WP22123 == 3 ~ "Not important at all",
+                             WP22123 == 8 ~ "(DK)",
+                             WP22123 == 9 ~ "(Refused)"))
+
+adolescentes <- adolescentes %>% 
+  mutate(WP22124 = case_when(WP22124 == 1 ~ "Very important",
+                             WP22124 == 2 ~ "Somewhat important",
+                             WP22124 == 3 ~ "Not important at all",
+                             WP22124 == 8 ~ "(DK)",
+                             WP22124 == 9 ~ "(Refused)"))
+
+
+adolescentes <- adolescentes %>% 
+  mutate(WP22140 = case_when(WP22140 == 1 ~ "Age 15-24")) %>% 
+  rename("O mundo é um lugar melhor?" = WP22092, 
+         "Você confia muito, pouco ou não confia na polícia?" = WP22096, 
+         "O quão importante é que as crianças sejam ouvidas por líderes políticos?" = WP22105,  
+         "Na sua opinião, qual é a idade ideal para mulheres casarem?" = WP22109,
+         "Na sua opinião, qual é a idade ideal para homens casarem?" = WP22110, 
+         "O quão importante é que os seguintes grupos sejam tratados de forma igualitária?(minorias étnicas e raciais)" = WP22121, 
+         "O quão importante é que os seguintes grupos sejam tratados de forma igualitária?(minorias religiosas)" = WP22122,
+         "O quão importante é que os seguintes grupos sejam tratados de forma igualitária?(mulheres)" = WP22123, 
+         "O quão importante é tratar grupos LGBT+ igualmente?" = WP22124,
+         "Gênero do Participante" = WP1219)
+         
+           
+           
+write_csv(adolescentes, "unesco_youngers.csv")
+
+#confiança na polícia 
+policia <- adolescentes %>% 
+count(`Gênero do Participante`, AGE, `Você confia muito, pouco ou não confia na polícia?`) 
+write_csv(policia, "confianca_policia.csv")
+
+#crianças e líderes
+
+crianças_politica <- adolescentes %>% 
+  count(`Gênero do Participante`, AGE, `O quão importante é que as crianças sejam ouvidas por líderes políticos?`)
+
+write_csv(crianças_politica, "crianças_politica.csv")
+
+
+#minorias_religioes 
+
+minorias_raça <- adolescentes %>% 
+  count(`Gênero do Participante`, AGE, `O quão importante é que os seguintes grupos sejam tratados de forma igualitária?(minorias étnicas e raciais)`)
+
+write_csv(minorias_raça, "etnia.csv")
+
+
+minorias_religioes <- adolescentes %>% 
+  count(`Gênero do Participante`, AGE, `O quão importante é que os seguintes grupos sejam tratados de forma igualitária?(minorias religiosas)`)
+
+write_csv(minorias_religioes, "religioes.csv")
+
+#minorias_mulheres
+
+minorias_mulheres <- adolescentes %>% 
+  count(`Gênero do Participante`, AGE, `O quão importante é que os seguintes grupos sejam tratados de forma igualitária?(mulheres)`)
+
+write_csv(minorias_mulheres, "mulheres.csv")
+
+
+#minorias_lgbt 
+
+minorias_lgbt <- adolescentes %>% 
+  count(`Gênero do Participante`, AGE, `O quão importante é tratar grupos LGBT+ igualmente?`)
+
+write_csv(minorias_lgbt, "homofobia.csv")
+
+
+#mulheres_casamento 
+
+mulheres <- adolescentes %>% 
+  count(`Na sua opinião, qual é a idade ideal para mulheres casarem?`) %>% 
+  mutate(faixa_etária = case_when(`Na sua opinião, qual é a idade ideal para mulheres casarem?`%in% c(0,1,2,3,4,5,6,7,8,9,10,11) ~ "0 a 11 anos",
+                                  `Na sua opinião, qual é a idade ideal para mulheres casarem?` %in% c(12,13,14,15,16,17) ~ "12 a 17 anos",
+                                  `Na sua opinião, qual é a idade ideal para mulheres casarem?` %in% c(18,19,20,21,22,23,24,25,26,27,28,29) ~ "18 a 29 anos",
+                                  `Na sua opinião, qual é a idade ideal para mulheres casarem?` %in% c(30,31,32,33,34,35,36,37,38,39,40,41,
+                                         42,43,44,45,46,47,48,49,50,51,52,53,
+                                         54,55,56,57,58,59) ~ "30 a 59 anos",
+                           anosid %in% c(60,61,62,63,64,65,66,67,68,69,70,71,
+                                         72,73,74,75,76,77,78,79,80,81,82,83,
+                                         84,85,86,87,88,89,90,91,92,93,94,95,
+                                         96,97,98,99,100,101,102,103,104,105,
+                                         106,107,108,109,110,111,112,113,114,
+                                         115,116,117,118,119,120,121,122,123,
+                                         124,125,126,127,128,129,130,131,132,
+                                         133,134,135,136,137,138,139,140) ~ "60 anos ou mais"))
+
+
+write_csv(mulheres, "mulheres.csv")
